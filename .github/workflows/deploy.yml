@@ -1,0 +1,28 @@
+name: Deploy
+on:
+  workflow_dispatch:
+  push: { tags: ["v*"] }
+permissions: { contents: read, packages: write }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Build and push (arm64 for t4g)
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          for app in server web; do
+            docker buildx build --platform linux/arm64 -f infra/Dockerfile.$app \
+              -t ghcr.io/$OWNER/quotefollow-$app:${{ github.sha }} -t ghcr.io/$OWNER/quotefollow-$app:latest --push .
+          done
+      - name: Roll out
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: /opt/quotefollow/deploy.sh ${{ github.sha }}

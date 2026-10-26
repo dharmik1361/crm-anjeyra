@@ -1,0 +1,36 @@
+{
+  "name": "@qf/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env src/api.ts",
+    "dev:worker": "tsx watch --env-file=../../.env src/worker.ts",
+    "dev:db": "tsx scripts/dev-db.ts",
+    "seed": "tsx --env-file=../../.env scripts/seed.ts",
+    "build": "tsup src/api.ts src/worker.ts --format esm --target node22 --clean --noExternal @qf/core,@qf/db,@qf/config",
+    "start:api": "node dist/api.js",
+    "start:worker": "node dist/worker.js",
+    "typecheck": "tsc -p .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/helmet": "^13.0.1",
+    "@fastify/multipart": "^9.0.1",
+    "@fastify/rate-limit": "^10.2.1",
+    "@qf/config": "workspace:*",
+    "@qf/core": "workspace:*",
+    "@qf/db": "workspace:*",
+    "exceljs": "^4.4.0",
+    "fastify": "^5.2.0",
+    "mongoose": "^8.9.0",
+    "pino": "^9.5.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.2",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2"
+  }
+}

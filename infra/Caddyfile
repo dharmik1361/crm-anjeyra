@@ -1,0 +1,14 @@
+# Automatic HTTPS. The API is only reachable for WhatsApp/SES webhooks and health checks;
+# the console talks to it over the internal network.
+{$CONSOLE_HOST:app.quotefollow.in} {
+  encode gzip
+  reverse_proxy web:3000
+}
+
+{$API_HOST:api.quotefollow.in} {
+  @public path /healthz /hooks/*
+  handle @public {
+    reverse_proxy api:4000
+  }
+  respond 404
+}

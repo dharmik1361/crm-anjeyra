@@ -1,0 +1,30 @@
+# Production on one EC2 t4g.small in ap-south-1. MongoDB is Atlas (Mumbai), not on this box.
+# Env comes from /opt/quotefollow/.env, written from SSM Parameter Store by deploy.sh.
+services:
+  api:
+    image: ghcr.io/${GH_OWNER}/quotefollow-server:${TAG:-latest}
+    env_file: .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/healthz"]
+      interval: 30s
+  worker:
+    image: ghcr.io/${GH_OWNER}/quotefollow-server:${TAG:-latest}
+    command: ["node", "dist/worker.js"]
+    env_file: .env
+    restart: unless-stopped
+  web:
+    image: ghcr.io/${GH_OWNER}/quotefollow-web:${TAG:-latest}
+    env_file: .env
+    environment:
+      API_URL: http://api:4000
+    restart: unless-stopped
+  caddy:
+    image: caddy:2-alpine
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    restart: unless-stopped
+volumes:
+  caddy_data:
