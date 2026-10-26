@@ -8,7 +8,7 @@
     "dev:worker": "tsx watch --env-file=../../.env src/worker.ts",
     "dev:db": "tsx scripts/dev-db.ts",
     "seed": "tsx --env-file=../../.env scripts/seed.ts",
-    "build": "tsup src/api.ts src/worker.ts --format esm --target node22 --clean --noExternal @qf/core,@qf/db,@qf/config",
+    "build": "tsup",
     "start:api": "node dist/api.js",
     "start:worker": "node dist/worker.js",
     "typecheck": "tsc -p .",
