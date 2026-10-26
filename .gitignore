@@ -2,8 +2,6 @@ node_modules
 dist
 .next
 .turbo
-.env
-.env.*
 !.env.example
 .mongo-dev
 coverage
@@ -11,3 +9,7 @@ coverage
 .DS_Store
 next-env.d.ts
 *.tsbuildinfo
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+config.bat
